@@ -50,10 +50,19 @@ if uploaded_file is not None:
                                 id_col: 'Frequency',
                                 money_col: 'MonetaryValue'}, inplace=True)
 
-            # RFM Score
-            rfm['R'] = pd.qcut(rfm['Recency'], 4, ['1', '2', '3', '4'], duplicates='drop')
-            rfm['F'] = pd.qcut(rfm['Frequency'], 4, ['4', '3', '2', '1'], duplicates='drop')
-            rfm['M'] = pd.qcut(rfm['MonetaryValue'], 4, ['4', '3', '2', '1'], duplicates='drop')
+
+            # RFM scoring
+            def get_qcut(series, labels, n_quantiles=4):
+                unique_vals = series.nunique()
+                if unique_vals < n_quantiles:
+                    return pd.cut(series, bins=unique_vals, labels=labels[:unique_vals], duplicates='drop')
+                else:
+                    return pd.qcut(series, q=n_quantiles, labels=labels, duplicates='drop')
+
+
+            rfm['R'] = get_qcut(rfm['Recency'], ['1', '2', '3', '4'])
+            rfm['F'] = get_qcut(rfm['Frequency'], ['4', '3', '2', '1'])
+            rfm['M'] = get_qcut(rfm['MonetaryValue'], ['4', '3', '2', '1'])
 
             rfm['RFM_Segment'] = rfm['R'].astype(str) + rfm['F'].astype(str) + rfm['M'].astype(str)
             rfm['RFM_Score'] = rfm[['R', 'F', 'M']].sum(axis=1)
