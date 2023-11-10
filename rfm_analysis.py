@@ -60,12 +60,12 @@ if uploaded_file is not None:
                     return pd.qcut(series, q=n_quantiles, labels=labels, duplicates='drop')
 
 
-            #rfm['R'] = get_qcut(rfm['Recency'], ['1', '2', '3', '4'])
-            #rfm['F'] = get_qcut(rfm['Frequency'], ['4', '3', '2', '1'])
-            #rfm['M'] = get_qcut(rfm['MonetaryValue'], ['4', '3', '2', '1'])
+            rfm['R'] = get_qcut(rfm['Recency'], ['1', '2', '3', '4'])
+            rfm['F'] = get_qcut(rfm['Frequency'], ['4', '3', '2', '1'])
+            rfm['M'] = get_qcut(rfm['MonetaryValue'], ['4', '3', '2', '1'])
 
-            #rfm['RFM_Segment'] = rfm['R'].astype(str) + rfm['F'].astype(str) + rfm['M'].astype(str)
-            #rfm['RFM_Score'] = rfm[['R', 'F', 'M']].sum(axis=1)
+            rfm['RFM_Segment'] = rfm['R'].astype(str) + rfm['F'].astype(str) + rfm['M'].astype(str)
+            rfm['RFM_Score'] = rfm[['R', 'F', 'M']].sum(axis=1)
 
             # Display RFM segmentation
             st.write('RFM Analysis')
