@@ -93,5 +93,5 @@ def main():
                                        file_name='rfm_analysis.csv',
                                        mime='text/csv')
 
-                if __name__ == "__main__":
-                    main()
+if __name__ == "__main__":
+    main()
