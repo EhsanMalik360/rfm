@@ -42,6 +42,18 @@ def plot_segment_distribution(segmented_data):
     plt.xticks(rotation=45)
     return plt
 
+# Function to check data types
+def validate_data_types(data, date_col, id_col, spend_col):
+    if data[id_col].dtype != 'O':
+        return "Customer ID column should be of string type."
+    if not pd.api.types.is_numeric_dtype(data[spend_col]):
+        return "Total Spend column should be numeric."
+    try:
+        pd.to_datetime(data[date_col])
+    except Exception as e:
+        return f"Invoice Date column should be a date. Error: {e}"
+    return None
+
 # Streamlit app main function
 def main():
     st.title("RFM Analysis App")
@@ -58,20 +70,21 @@ def main():
         spend_col = st.selectbox("Select Total Spend Column", data.columns)
 
         if st.button("Calculate RFM"):
-            rfm_data = calculate_rfm(data, date_col, id_col, spend_col)
-            segmented_data = segment_customers(rfm_data)
+            error_message = validate_data_types(data, date_col, id_col, spend_col)
+            if error_message:
+                st.error(error_message)
+            else:
+                rfm_data = calculate_rfm(data, date_col, id_col, spend_col)
+                segmented_data = segment_customers(rfm_data)
 
-            # Display results
-            st.write("RFM Analysis Results")
-            st.dataframe(segmented_data)
+                # Display results
+                st.write("RFM Analysis Results")
+                st.dataframe(segmented_data)
 
-            # Plotting segment distribution
-            st.write("Segment Distribution")
-            fig = plot_segment_distribution(segmented_data)
-            st.pyplot(fig)
+                # Plotting segment distribution
+                st.write("Segment Distribution")
+                fig = plot_segment_distribution(segmented_data)
+                st.pyplot(fig)
 
-            # Export button
-            st.download_button(label="Download RFM Data", data=segmented_data.to_csv(index=False), file_name='rfm_analysis.csv', mime='text/csv')
-
-if __name__ == "__main__":
-    main()
+                # Export button
+                st.download_button(label="Download RFM Data", data=segmented_data.to_csv(index=False), file_name='rfm_analysis.csv', mime
