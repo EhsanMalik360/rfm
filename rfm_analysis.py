@@ -112,8 +112,8 @@ def main():
             st.dataframe(segmented_data)
 
             # Export button (optional)
-            st.download_button(label="Download RFM Data", data=segmented_data.to_csv(index=False),
-                               file_name='rfm_analysis.csv', mime='text/csv')
+            #st.download_button(label="Download RFM Data", data=segmented_data.to_csv(index=False),
+            #                   file_name='rfm_analysis.csv', mime='text/csv')
             # Plotting segment distribution
             st.write("Segment Distribution")
             fig = plot_segment_distribution(segmented_data)
