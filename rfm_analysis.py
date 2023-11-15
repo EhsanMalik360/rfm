@@ -58,12 +58,10 @@ def validate_data_types(data, date_col, id_col, spend_col):
 def main():
     st.title("RFM Analysis App")
 
-    # File uploader
     uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
     if uploaded_file is not None:
         data = pd.read_csv(uploaded_file)
 
-        # Column selection
         st.write("Select the columns for RFM analysis")
         id_col = st.selectbox("Select Customer ID Column", data.columns)
         date_col = st.selectbox("Select Invoice Date Column", data.columns)
@@ -77,14 +75,14 @@ def main():
                 rfm_data = calculate_rfm(data, date_col, id_col, spend_col)
                 segmented_data = segment_customers(rfm_data)
 
-                # Display results
                 st.write("RFM Analysis Results")
                 st.dataframe(segmented_data)
 
-                # Plotting segment distribution
                 st.write("Segment Distribution")
                 fig = plot_segment_distribution(segmented_data)
                 st.pyplot(fig)
 
-                # Export button
-                st.download_button(label="Download RFM Data", data=segmented_data.to_csv(index=False), file_name='rfm_analysis.csv', mime
+                st.download_button(label="Download RFM Data", data=segmented_data.to_csv(index=False), file_name='rfm_analysis.csv', mime='text/csv')
+
+if __name__ == "__main__":
+    main()
