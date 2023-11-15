@@ -89,11 +89,20 @@ def plot_segment_distribution(segmented_data):
 def main():
     st.title("RFM Analysis App")
 
-    # File uploader
-    uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
-    if uploaded_file is not None:
-        data = pd.read_csv(uploaded_file)
+    # Option to use a sample dataset
+    if st.checkbox('Use Sample Dataset'):
+        # Load your sample dataset here
+        # Replace 'path_to_sample_dataset.csv' with the path or URL to your sample dataset
+        data = pd.read_csv('retail.csv')
+    else:
+        # File uploader for user's own data
+        uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
+        if uploaded_file is not None:
+            data = pd.read_csv(uploaded_file)
+        else:
+            data = None
 
+    if data is not None:
         # Column selection
         st.write("Select the columns for RFM analysis")
         id_col = st.selectbox("Select Customer ID Column", data.columns)
@@ -103,22 +112,15 @@ def main():
         if st.button("Calculate RFM"):
             # Calculate RFM
             rfm_data = calculate_rfm(data, date_col, id_col, spend_col)
-
             # Segment customers
             segmented_data = segment_customers(rfm_data)
-
             # Display results
             st.write("RFM Analysis Results")
             st.dataframe(segmented_data)
-
-            # Export button (optional)
-            #st.download_button(label="Download RFM Data", data=segmented_data.to_csv(index=False),
-            #                   file_name='rfm_analysis.csv', mime='text/csv')
             # Plotting segment distribution
             st.write("Segment Distribution")
             fig = plot_segment_distribution(segmented_data)
             st.pyplot(fig)
-
             # Export button
             st.download_button(label="Download RFM Data", data=segmented_data.to_csv(index=False), file_name='rfm_analysis.csv', mime='text/csv')
 
