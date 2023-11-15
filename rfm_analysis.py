@@ -1,11 +1,15 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-from datetime import datetime
 
 # Function to calculate RFM metrics
 def calculate_rfm(data, date_col, id_col, spend_col):
-    data[date_col] = pd.to_datetime(data[date_col])
+    try:
+        data[date_col] = pd.to_datetime(data[date_col])
+    except Exception as e:
+        st.error(f"Error converting Invoice Date column to datetime: {e}")
+        return None
+
     max_date = data[date_col].max() + pd.to_timedelta(1, unit='d')
     rfm = data.groupby(id_col).agg({
         date_col: lambda x: (max_date - x.max()).days,
@@ -42,16 +46,17 @@ def plot_segment_distribution(segmented_data):
     plt.xticks(rotation=45)
     return plt
 
-# Function to check data types
+# Function to check data types and convert if possible
 def validate_data_types(data, date_col, id_col, spend_col):
-    if data[id_col].dtype != 'O':
-        return "Customer ID column should be of string type."
     if not pd.api.types.is_numeric_dtype(data[spend_col]):
-        return "Total Spend column should be numeric."
-    try:
-        pd.to_datetime(data[date_col])
-    except Exception as e:
-        return f"Invoice Date column should be a date. Error: {e}"
+        try:
+            data[spend_col] = pd.to_numeric(data[spend_col])
+        except ValueError:
+            return "Total Spend column should be numeric or convertible to numeric."
+
+    if data[id_col].dtype != 'O':
+        data[id_col] = data[id_col].astype(str)
+
     return None
 
 # Streamlit app main function
@@ -73,16 +78,20 @@ def main():
                 st.error(error_message)
             else:
                 rfm_data = calculate_rfm(data, date_col, id_col, spend_col)
-                segmented_data = segment_customers(rfm_data)
+                if rfm_data is not None:
+                    segmented_data = segment_customers(rfm_data)
 
-                st.write("RFM Analysis Results")
-                st.dataframe(segmented_data)
+                    st.write("RFM Analysis Results")
+                    st.dataframe(segmented_data)
 
-                st.write("Segment Distribution")
-                fig = plot_segment_distribution(segmented_data)
-                st.pyplot(fig)
+                    st.write("Segment Distribution")
+                    fig = plot_segment_distribution(segmented_data)
+                    st.pyplot(fig)
 
-                st.download_button(label="Download RFM Data", data=segmented_data.to_csv(index=False), file_name='rfm_analysis.csv', mime='text/csv')
+                    st.download_button(label="Download RFM Data",
+                                       data=segmented_data.to_csv(index=False),
+                                       file_name='rfm_analysis.csv',
+                                       mime='text/csv')
 
-if __name__ == "__main__":
-    main()
+                if __name__ == "__main__":
+                    main()
