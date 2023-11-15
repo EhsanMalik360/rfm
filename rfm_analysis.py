@@ -4,6 +4,7 @@ from datetime import datetime
 
 
 # Function to calculate RFM metrics
+# Function to calculate RFM metrics
 def calculate_rfm(data, date_col, id_col, spend_col):
     # Convert InvoiceDate to datetime
     data[date_col] = pd.to_datetime(data[date_col])
@@ -12,11 +13,15 @@ def calculate_rfm(data, date_col, id_col, spend_col):
     max_date = data[date_col].max() + pd.to_timedelta(1, unit='d')
     rfm = data.groupby(id_col).agg({
         date_col: lambda x: (max_date - x.max()).days,
-        id_col: 'count',
         spend_col: 'sum'
-    }).rename(columns={date_col: 'Recency', id_col: 'Frequency', spend_col: 'Monetary'})
+    }).rename(columns={date_col: 'Recency', spend_col: 'Monetary'})
+    rfm['Frequency'] = data.groupby(id_col)[id_col].count()
+
+    # Reset index to keep CustomerID in the DataFrame
+    rfm.reset_index(inplace=True)
 
     return rfm
+
 
 
 # Function to segment customers based on RFM scores
