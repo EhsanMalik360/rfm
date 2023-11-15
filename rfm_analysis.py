@@ -87,7 +87,7 @@ def plot_segment_distribution(segmented_data):
 
 # Streamlit app main function
 def main():
-    st.title("RFM Analysis App")
+    st.title("RFM Analyzer")
 
     # Option to use a sample dataset
     if st.checkbox('Use Sample Dataset'):
