@@ -7,8 +7,8 @@ from datetime import datetime
 # Function to calculate RFM metrics
 # Function to calculate RFM metrics
 def calculate_rfm(data, date_col, id_col, spend_col):
-    # Convert InvoiceDate to datetime
-    data[date_col] = pd.to_datetime(data[date_col])
+    # Attempt to parse the date column into a standard format
+    data[date_col] = data[date_col].apply(lambda x: parser.parse(x, fuzzy=True))
 
     # Calculate Recency, Frequency, and Monetary metrics
     max_date = data[date_col].max() + pd.to_timedelta(1, unit='d')
