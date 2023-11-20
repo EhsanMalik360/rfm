@@ -103,15 +103,15 @@ def main():
         else:
             data = None
 
+
     # Add a download button for the sample dataset
-    if st.button('Download Sample Dataset'):
-        with open('retail.csv', 'rb') as file:
-            st.download_button(
-                label="Download Sample Dataset",
-                data=file,
-                file_name='retail.csv',
-                mime='text/csv'
-            )
+    with open('retail.csv', 'rb') as file:
+        st.download_button(
+            label="Download Sample Dataset",
+            data=file,
+            file_name='retail.csv',
+            mime='text/csv'
+        )
 
 
     if data is not None:
