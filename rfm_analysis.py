@@ -103,7 +103,7 @@ def main():
         else:
             data = None
 
-
+    st.write("Please use the standard format for Customer ID, Invoice Date and Total Spend from sample dataset for accurate RFM Analysis.")
     # Add a download button for the sample dataset
     with open('retail.csv', 'rb') as file:
         st.download_button(
